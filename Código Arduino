@@ -1,0 +1,121 @@
+// Pinos Sensor ESQUERDO (Sensor 1)
+#define TRIG 3
+#define ECHO 4
+
+// Pinos Sensor DIREITO (Sensor 2)
+#define TRIG_1 6
+#define ECHO_1 5
+
+// LEDs do Sensor 1
+#define led_al1 9
+#define led_ac1 11
+#define led_lz1 7
+
+// LEDs do Sensor 2
+#define led_al2 8
+#define led_ac2 10
+#define led_lz2 2
+
+// LED extra
+#define led_lz3 13
+
+
+float medirDistancia(int trig, int echo)
+{
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+
+  digitalWrite(trig, LOW);
+
+  long tempo = pulseIn(echo, HIGH);
+
+  float distancia = tempo * 0.034 / 2;
+
+  return distancia;
+}
+
+
+void setup()
+{
+  Serial.begin(9600);
+
+  // Sensores
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
+
+  pinMode(TRIG_1, OUTPUT);
+  pinMode(ECHO_1, INPUT);
+
+  // LEDs sensor 1
+  pinMode(led_al1, OUTPUT);
+  pinMode(led_ac1, OUTPUT);
+  pinMode(led_lz1, OUTPUT);
+
+  // LEDs sensor 2
+  pinMode(led_al2, OUTPUT);
+  pinMode(led_ac2, OUTPUT);
+  pinMode(led_lz2, OUTPUT);
+
+  // LED extra
+  pinMode(led_lz3, OUTPUT);
+}
+
+
+void loop()
+{
+  float d1 = medirDistancia(TRIG, ECHO);
+  float d2 = medirDistancia(TRIG_1, ECHO_1);
+
+  Serial.print("Sensor1: ");
+  Serial.println(d1);
+
+  Serial.print("Sensor2: ");
+  Serial.println(d2);
+
+
+  // Sensor ESQUERDO
+  if (d1 <= 100)
+  {
+    digitalWrite(led_al1, HIGH);
+    digitalWrite(led_ac1, HIGH);
+    digitalWrite(led_lz1, HIGH);
+  }
+  else
+  {
+    digitalWrite(led_al1, LOW);
+    digitalWrite(led_ac1, LOW);
+    digitalWrite(led_lz1, LOW);
+  }
+
+
+  // Sensor DIREITO
+  if (d2 <= 100)
+  {
+    digitalWrite(led_al2, HIGH);
+    digitalWrite(led_ac2, HIGH);
+    digitalWrite(led_lz2, HIGH);
+  }
+  else
+  {
+    digitalWrite(led_al2, LOW);
+    digitalWrite(led_ac2, LOW);
+    digitalWrite(led_lz2, LOW);
+  }
+
+
+  // LED extra só liga se LZ1 e LZ2 estiverem ligados
+  if (digitalRead(led_lz1) == HIGH &&
+      digitalRead(led_lz2) == HIGH)
+  {
+    digitalWrite(led_lz3, HIGH);
+  }
+  else
+  {
+    digitalWrite(led_lz3, LOW);
+  }
+
+  delay(100);
+}
